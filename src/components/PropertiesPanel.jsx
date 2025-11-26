@@ -2,8 +2,9 @@ import React from 'react'
 import { useStore } from '../store/useStore'
 import { X, Layers, Trash2, Repeat, Volume2, VolumeX } from 'lucide-react'
 
-const PropertiesPanel = ({ elementId, slideId }) => {
+const PropertiesPanel = ({ elementId, slideId, onClose }) => {
     const updateElement = useStore(state => state.updateElement)
+    const removeElement = useStore(state => state.removeElement)
     const slides = useStore(state => state.slides)
 
     // Find the element safely
@@ -19,9 +20,17 @@ const PropertiesPanel = ({ elementId, slideId }) => {
     return (
         <div className="fixed top-4 right-4 w-64 bg-gray-900/90 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white shadow-2xl z-50">
             <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-2">
-                <h3 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Properties</h3>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-white"
+                    >
+                        <X size={16} />
+                    </button>
+                    <h3 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Properties</h3>
+                </div>
                 <button
-                    onClick={() => useStore.getState().updateElement(slideId, elementId, { deleted: true })} // We need a delete action ideally
+                    onClick={() => removeElement(slideId, elementId)}
                     className="text-red-400 hover:text-red-300"
                 >
                     <Trash2 size={16} />

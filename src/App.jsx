@@ -59,7 +59,11 @@ const Slide = ({ slide }) => {
             onSelect={setSelectedElementId}
           />
           {selectedElementId === el.id && (
-            <PropertiesPanel elementId={el.id} slideId={slide.id} />
+            <PropertiesPanel
+              elementId={el.id}
+              slideId={slide.id}
+              onClose={() => setSelectedElementId(null)}
+            />
           )}
         </React.Fragment>
       ))}

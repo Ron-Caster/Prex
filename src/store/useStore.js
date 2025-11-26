@@ -62,4 +62,14 @@ export const useStore = create((set, get) => ({
             }
         })
     })),
+
+    removeElement: (slideId, elementId) => set((state) => ({
+        slides: state.slides.map(slide => {
+            if (slide.id !== slideId) return slide
+            return {
+                ...slide,
+                elements: slide.elements.filter(el => el.id !== elementId)
+            }
+        })
+    })),
 }))
