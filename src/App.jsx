@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import { useStore } from './store/useStore' // This path is for App component
 import { motion } from 'framer-motion'
+import { Plus, Image as ImageIcon, Video, Trash2, X, Play } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 import Element from './components/Element'
 import PropertiesPanel from './components/PropertiesPanel'
@@ -84,8 +85,35 @@ function App() {
     addSlide,
     addElement, // Added
     selectedElement,
-    setSelectedElement
+    setSelectedElement,
+    isPresenting,
+    setIsPresenting
   } = useStore()
+
+  const togglePresentation = () => {
+    if (!isPresenting) {
+      document.documentElement.requestFullscreen().catch(e => {
+        console.error("Fullscreen failed", e)
+      })
+      setIsPresenting(true)
+      setSelectedElement(null) // Deselect any element
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      }
+      setIsPresenting(false)
+    }
+  }
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsPresenting(false)
+      }
+    }
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [setIsPresenting])
 
   // Keyboard navigation
   useEffect(() => {
@@ -159,7 +187,7 @@ function App() {
       </motion.div>
 
       {/* Global Properties Panel */}
-      {selectedElement && (
+      {selectedElement && !isPresenting && (
         <PropertiesPanel
           elementId={selectedElement.id}
           slideId={selectedElement.slideId}
@@ -168,30 +196,39 @@ function App() {
       )}
 
       {/* UI Overlay */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex gap-4 items-center z-[9999]">
-        <button
-          onClick={() => handleAddSlide('horizontal')}
-          className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
-        >
-          Add Slide <span className="text-xs bg-white/10 px-1 rounded">→</span>
-        </button>
-        <div className="w-px h-4 bg-white/20"></div>
-        <button
-          onClick={() => handleAddSlide('vertical')}
-          className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
-        >
-          Add Slide <span className="text-xs bg-white/10 px-1 rounded">↓</span>
-        </button>
-        <div className="w-px h-4 bg-white/20"></div>
-        <button
-          onClick={() => addElement(currentSlideId, 'text', 'Double click to edit')}
-          className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
-        >
-          Add Text <span className="text-xs bg-white/10 px-1 rounded">T</span>
-        </button>
-        <div className="w-px h-4 bg-white/20"></div>
-        <div className="text-sm opacity-70">Use Arrow Keys to Navigate</div>
-      </div>
+      {!isPresenting && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900/90 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 flex items-center gap-6 text-white shadow-2xl z-[9999]">
+          <button
+            onClick={() => handleAddSlide('horizontal')}
+            className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
+          >
+            Add Slide <span className="text-xs bg-white/10 px-1 rounded">→</span>
+          </button>
+          <div className="w-px h-4 bg-white/20"></div>
+          <button
+            onClick={() => handleAddSlide('vertical')}
+            className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
+          >
+            Add Slide <span className="text-xs bg-white/10 px-1 rounded">↓</span>
+          </button>
+          <div className="w-px h-4 bg-white/20"></div>
+          <button
+            onClick={() => addElement(currentSlideId, 'text', 'Double click to edit')}
+            className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
+          >
+            Add Text <span className="text-xs bg-white/10 px-1 rounded">T</span>
+          </button>
+          <div className="w-px h-4 bg-white/20"></div>
+          <button
+            onClick={togglePresentation}
+            className="hover:text-primary transition-colors font-semibold flex items-center gap-2 text-green-400"
+          >
+            Present <Play size={16} fill="currentColor" />
+          </button>
+          <div className="w-px h-4 bg-white/20"></div>
+          <div className="text-sm opacity-70">Use Arrow Keys to Navigate</div>
+        </div>
+      )}
     </div>
   )
 }

@@ -11,6 +11,9 @@ export const useStore = create((set, get) => ({
     camera: { x: 0, y: 0 },
     selectedElement: null, // { id, slideId }
 
+    isPresenting: false,
+    setIsPresenting: (isPresenting) => set({ isPresenting }),
+
     // Actions
     setSelectedElement: (element) => set({ selectedElement: element }),
     addSlide: (x, y) => set((state) => {
