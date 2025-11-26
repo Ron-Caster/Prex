@@ -122,8 +122,24 @@ const Element = ({ element, slideId, isSelected, onSelect }) => {
                         target.style.transform = transform
                     }}
                     // Sync back to store on end
-                    onDragEnd={({ target }) => {
-                        // In a real app, we parse the matrix here to update x,y in store
+                    onDragEnd={({ lastEvent }) => {
+                        if (lastEvent) {
+                            const [x, y] = lastEvent.translate
+                            updateElement(slideId, element.id, { x, y })
+                        }
+                    }}
+                    onResizeEnd={({ lastEvent }) => {
+                        if (lastEvent) {
+                            const { width, height, drag } = lastEvent
+                            const [x, y] = drag.translate
+                            updateElement(slideId, element.id, { width, height, x, y })
+                        }
+                    }}
+                    onRotateEnd={({ lastEvent }) => {
+                        if (lastEvent) {
+                            const { rotate } = lastEvent
+                            updateElement(slideId, element.id, { rotation: rotate })
+                        }
                     }}
                 />
             )}

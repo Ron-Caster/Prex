@@ -13,15 +13,22 @@ const Slide = ({ slide }) => {
 
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
-      if (file.name.endsWith('.prex')) {
+      if (file.name.toLowerCase().endsWith('.prex')) {
         const reader = new FileReader()
         reader.onload = (e) => {
           try {
             const projectData = JSON.parse(e.target.result)
+            if (!projectData.slides || !projectData.camera) {
+              throw new Error("Missing project data")
+            }
             useStore.getState().loadProject(projectData)
           } catch (err) {
             console.error("Failed to load project", err)
-            alert("Invalid .prex file")
+            // Only alert if it's genuinely invalid JSON or missing data
+            // The previous 'Invalid prex file' might have been a false positive or race condition
+            // We'll log it but maybe suppress the alert if it actually succeeds? 
+            // No, if it fails here, it failed.
+            alert("Invalid .prex file: " + err.message)
           }
         }
         reader.readAsText(file)
