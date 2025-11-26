@@ -151,7 +151,7 @@ function App() {
       </motion.div>
 
       {/* UI Overlay */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex gap-4 items-center">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex gap-4 items-center z-[9999]">
         <button
           onClick={() => handleAddSlide('horizontal')}
           className="hover:text-primary transition-colors font-semibold flex items-center gap-2"

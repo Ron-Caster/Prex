@@ -18,7 +18,7 @@ const PropertiesPanel = ({ elementId, slideId, onClose }) => {
     }
 
     return (
-        <div className="fixed top-4 right-4 w-64 bg-gray-900/90 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white shadow-2xl z-50">
+        <div className="fixed top-4 right-4 w-64 bg-gray-900/90 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white shadow-2xl z-[9999]">
             <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-2">
                 <div className="flex items-center gap-2">
                     <button
