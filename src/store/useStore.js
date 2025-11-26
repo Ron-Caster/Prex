@@ -9,8 +9,10 @@ export const useStore = create((set, get) => ({
     ],
     currentSlideId: 'slide-0-0',
     camera: { x: 0, y: 0 },
+    selectedElement: null, // { id, slideId }
 
     // Actions
+    setSelectedElement: (element) => set({ selectedElement: element }),
     addSlide: (x, y) => set((state) => {
         const exists = state.slides.find(s => s.x === x && s.y === y)
         if (exists) return {}

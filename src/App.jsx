@@ -7,7 +7,8 @@ import PropertiesPanel from './components/PropertiesPanel'
 
 const Slide = ({ slide }) => {
   const addElement = useStore(state => state.addElement)
-  const [selectedElementId, setSelectedElementId] = useState(null)
+  const selectedElement = useStore(state => state.selectedElement)
+  const setSelectedElement = useStore(state => state.setSelectedElement)
 
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
@@ -36,7 +37,10 @@ const Slide = ({ slide }) => {
         left: `${slide.x * 100}vw`,
         top: `${slide.y * 100}vh`,
       }}
-      onClick={() => setSelectedElementId(null)}
+      onClick={(e) => {
+        e.stopPropagation()
+        // Don't deselect here, handled by parent or specific element clicks
+      }}
     >
       <input {...getInputProps()} />
 
@@ -55,16 +59,9 @@ const Slide = ({ slide }) => {
           <Element
             element={el}
             slideId={slide.id}
-            isSelected={selectedElementId === el.id}
-            onSelect={setSelectedElementId}
+            isSelected={selectedElement?.id === el.id}
+            onSelect={(id) => setSelectedElement({ id, slideId: slide.id })}
           />
-          {selectedElementId === el.id && (
-            <PropertiesPanel
-              elementId={el.id}
-              slideId={slide.id}
-              onClose={() => setSelectedElementId(null)}
-            />
-          )}
         </React.Fragment>
       ))}
 
@@ -78,7 +75,16 @@ const Slide = ({ slide }) => {
 }
 
 function App() {
-  const { slides, camera, moveCamera, currentSlideId, setCurrentSlide, addSlide } = useStore()
+  const {
+    slides,
+    camera,
+    moveCamera,
+    currentSlideId,
+    setCurrentSlide,
+    addSlide,
+    selectedElement,
+    setSelectedElement
+  } = useStore()
 
   // Keyboard navigation
   useEffect(() => {
@@ -144,11 +150,21 @@ function App() {
           y: `-${camera.y}vh`
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onClick={() => setSelectedElement(null)} // Deselect on background click
       >
         {slides.map(slide => (
           <Slide key={slide.id} slide={slide} />
         ))}
       </motion.div>
+
+      {/* Global Properties Panel */}
+      {selectedElement && (
+        <PropertiesPanel
+          elementId={selectedElement.id}
+          slideId={selectedElement.slideId}
+          onClose={() => setSelectedElement(null)}
+        />
+      )}
 
       {/* UI Overlay */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex gap-4 items-center z-[9999]">
