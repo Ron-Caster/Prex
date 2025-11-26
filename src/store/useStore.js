@@ -43,9 +43,13 @@ export const useStore = create((set, get) => ({
                     content,
                     x: 100, // Default position relative to slide
                     y: 100,
-                    width: 300,
-                    height: 200,
+                    width: type === 'text' ? 400 : 300,
+                    height: type === 'text' ? 100 : 200,
                     rotation: 0,
+                    fontSize: 24,
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#ffffff',
+                    textAlign: 'left',
                     ...styles
                 }]
             }

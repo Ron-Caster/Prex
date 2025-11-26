@@ -44,6 +44,28 @@ const Element = ({ element, slideId, isSelected, onSelect }) => {
                     border: isSelected ? '1px solid #3b82f6' : 'none' // Visual indicator
                 }}
             >
+                {element.type === 'text' && (
+                    <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => updateElement(slideId, element.id, { content: e.target.innerText })}
+                        className="w-full h-full outline-none"
+                        style={{
+                            fontSize: `${element.fontSize ?? 24}px`,
+                            fontFamily: element.fontFamily ?? 'Inter, sans-serif',
+                            fontWeight: element.fontWeight ?? 'normal',
+                            fontStyle: element.fontStyle ?? 'normal',
+                            textDecoration: element.textDecoration ?? 'none',
+                            textAlign: element.textAlign ?? 'left',
+                            color: element.color ?? '#ffffff',
+                            letterSpacing: `${element.letterSpacing ?? 0}px`,
+                            lineHeight: element.lineHeight ?? 1.5,
+                            cursor: 'text'
+                        }}
+                    >
+                        {element.content}
+                    </div>
+                )}
                 {element.type === 'image' && (
                     <img
                         src={element.content}

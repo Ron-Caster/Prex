@@ -82,6 +82,7 @@ function App() {
     currentSlideId,
     setCurrentSlide,
     addSlide,
+    addElement, // Added
     selectedElement,
     setSelectedElement
   } = useStore()
@@ -180,6 +181,13 @@ function App() {
           className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
         >
           Add Slide <span className="text-xs bg-white/10 px-1 rounded">↓</span>
+        </button>
+        <div className="w-px h-4 bg-white/20"></div>
+        <button
+          onClick={() => addElement(currentSlideId, 'text', 'Double click to edit')}
+          className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
+        >
+          Add Text <span className="text-xs bg-white/10 px-1 rounded">T</span>
         </button>
         <div className="w-px h-4 bg-white/20"></div>
         <div className="text-sm opacity-70">Use Arrow Keys to Navigate</div>
