@@ -50,8 +50,9 @@ const Element = ({ element, slideId, isSelected, onSelect }) => {
                         alt="slide-element"
                         className="w-full h-full object-cover pointer-events-none"
                         style={{
-                            // Basic cropping simulation using object-position and scale
+                            // Apply crop to both object-position (for base fit) and transform-origin (for zoom pan)
                             objectPosition: `${element.cropX ?? 50}% ${element.cropY ?? 50}%`,
+                            transformOrigin: `${element.cropX ?? 50}% ${element.cropY ?? 50}%`,
                             transform: `scale(${element.zoom ?? 1})`
                         }}
                     />
