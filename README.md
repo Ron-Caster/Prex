@@ -1,24 +1,43 @@
-# Prex - Infinite Canvas Presentation App
+# Prex - PowerPoint Alternative
 
-Prex is a PowerPoint alternative that features an infinite grid layout, allowing for horizontal sliding and vertical expansion. It supports drag-and-drop for media (images, videos) and advanced element manipulation.
+A modern, infinite-canvas presentation tool built with React, Vite, and UnoCSS.
 
-## 🚀 How to Run
+## Features
+- **Infinite Grid**: Navigate horizontally and vertically.
+- **Drag & Drop**: Add images and videos easily.
+- **Deep Manipulation**: Crop, Trim, Zoom, and Layer elements.
+- **Rich Text**: Full text editing and styling capabilities.
+- **Presentation Mode**: Distraction-free fullscreen presenting.
+- **Auto-Save**: Your work is automatically saved to your browser.
 
-1.  **Install Dependencies**
+## Getting Started
+
+1.  **Install Dependencies**:
     ```bash
     npm install
     ```
 
-2.  **Start Development Server**
+2.  **Run Development Server**:
     ```bash
     npm run dev
     ```
 
-3.  **Open in Browser**
-    Click the link shown in the terminal (usually `http://localhost:5173`).
+3.  **Build for Production**:
+    ```bash
+    npm run build
+    ```
 
-## 🎮 Controls
+## Deployment (GitHub Pages)
 
--   **Navigation**: Use `Arrow Keys` to move between slides.
--   **Add Media**: Drag and drop images or videos onto any slide.
--   **Edit Elements**: Click an element to select it. Use the handles to **Resize** or **Rotate**.
+This project is configured to be easily deployed to GitHub Pages.
+
+1.  **Build the Project**:
+    ```bash
+    npm run build
+    ```
+
+2.  **Deploy**:
+    - Push the contents of the `dist` folder to a `gh-pages` branch.
+    - OR use a deploy script/action.
+
+    **Note**: The `base: './'` in `vite.config.js` ensures that assets load correctly regardless of the repository name.

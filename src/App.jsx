@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import { useStore } from './store/useStore' // This path is for App component
 import { motion } from 'framer-motion'
-import { Plus, Image as ImageIcon, Video, Trash2, X, Play } from 'lucide-react'
+import { Plus, Image as ImageIcon, Video, Trash2, X, Play, Download, Upload } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 import Element from './components/Element'
 import PropertiesPanel from './components/PropertiesPanel'
@@ -13,6 +13,21 @@ const Slide = ({ slide }) => {
 
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
+      if (file.name.endsWith('.prex')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          try {
+            const projectData = JSON.parse(e.target.result)
+            useStore.getState().loadProject(projectData)
+          } catch (err) {
+            console.error("Failed to load project", err)
+            alert("Invalid .prex file")
+          }
+        }
+        reader.readAsText(file)
+        return
+      }
+
       const reader = new FileReader()
       reader.onload = () => {
         const type = file.type.startsWith('video') ? 'video' : 'image'
@@ -169,6 +184,37 @@ function App() {
     }, 0)
   }
 
+  const handleSave = () => {
+    const projectData = {
+      slides: useStore.getState().slides,
+      currentSlideId: useStore.getState().currentSlideId,
+      camera: useStore.getState().camera
+    }
+    const blob = new Blob([JSON.stringify(projectData)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'presentation.prex'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImport = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const projectData = JSON.parse(e.target.result)
+        useStore.getState().loadProject(projectData)
+      } catch (err) {
+        console.error("Failed to load project", err)
+        alert("Invalid .prex file")
+      }
+    }
+    reader.readAsText(file)
+  }
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-900 text-white relative">
       {/* Viewport / Camera */}
@@ -218,6 +264,20 @@ function App() {
           >
             Add Text <span className="text-xs bg-white/10 px-1 rounded">T</span>
           </button>
+          <div className="w-px h-4 bg-white/20"></div>
+
+          <button
+            onClick={handleSave}
+            className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
+            title="Save Project (.prex)"
+          >
+            <Download size={16} />
+          </button>
+          <label className="hover:text-primary transition-colors font-semibold flex items-center gap-2 cursor-pointer" title="Import Project (.prex)">
+            <Upload size={16} />
+            <input type="file" accept=".prex" onChange={handleImport} className="hidden" />
+          </label>
+
           <div className="w-px h-4 bg-white/20"></div>
           <button
             onClick={togglePresentation}
