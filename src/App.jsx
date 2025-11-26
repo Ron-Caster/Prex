@@ -266,6 +266,14 @@ function App() {
           </button>
           <div className="w-px h-4 bg-white/20"></div>
           <button
+            onClick={() => useStore.getState().removeSlide(currentSlideId)}
+            className="hover:text-red-400 transition-colors font-semibold flex items-center gap-2"
+            title="Delete Current Slide"
+          >
+            <Trash2 size={16} />
+          </button>
+          <div className="w-px h-4 bg-white/20"></div>
+          <button
             onClick={() => addElement(currentSlideId, 'text', 'Double click to edit')}
             className="hover:text-primary transition-colors font-semibold flex items-center gap-2"
           >

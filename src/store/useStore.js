@@ -39,6 +39,111 @@ export const useStore = create(
                 }
             }),
 
+            removeSlide: (id) => set((state) => {
+                if (state.slides.length <= 1) return {} // Prevent deleting last slide
+
+                const slideToRemove = state.slides.find(s => s.id === id)
+                if (!slideToRemove) return {}
+
+                const { x: delX, y: delY } = slideToRemove
+
+                // 1. Filter out the deleted slide
+                let newSlides = state.slides.filter(s => s.id !== id)
+
+                // 2. Determine Shift Strategy
+                // Check if there are slides below
+                const hasSlidesBelow = newSlides.some(s => s.x === delX && s.y > delY)
+
+                if (hasSlidesBelow) {
+                    // Shift UP: All slides with same X and Y > delY move to Y - 1
+                    newSlides = newSlides.map(s => {
+                        if (s.x === delX && s.y > delY) {
+                            const newY = s.y - 1
+                            return { ...s, y: newY, id: `slide-${s.x}-${newY}` } // Update ID to match new pos
+                        }
+                        return s
+                    })
+                } else {
+                    // Check if there are slides to the right (only if no slides below)
+                    const hasSlidesRight = newSlides.some(s => s.y === delY && s.x > delX)
+                    if (hasSlidesRight) {
+                        // Shift LEFT: All slides with same Y and X > delX move to X - 1
+                        newSlides = newSlides.map(s => {
+                            if (s.y === delY && s.x > delX) {
+                                const newX = s.x - 1
+                                return { ...s, x: newX, id: `slide-${newX}-${s.y}` } // Update ID to match new pos
+                            }
+                            return s
+                        })
+                    }
+                }
+
+                // 3. Handle Navigation
+                // If we deleted the current slide, we need to find where to go.
+                // Ideally, we go to the slide that took the deleted slide's coordinates (delX, delY).
+                // If no slide took that spot, we go to the last available slide.
+
+                let newCurrentSlideId = state.currentSlideId
+                let newCamera = state.camera
+
+                if (state.currentSlideId === id) {
+                    // Try to find a slide at the old coordinates
+                    const replacementSlide = newSlides.find(s => s.x === delX && s.y === delY)
+
+                    if (replacementSlide) {
+                        newCurrentSlideId = replacementSlide.id
+                        newCamera = { x: replacementSlide.x * 100, y: replacementSlide.y * 100 }
+                    } else {
+                        // Fallback: Go to the last slide in the list (or any safe neighbor)
+                        const lastSlide = newSlides[newSlides.length - 1]
+                        newCurrentSlideId = lastSlide.id
+                        newCamera = { x: lastSlide.x * 100, y: lastSlide.y * 100 }
+                    }
+                } else {
+                    // If we didn't delete the current slide, we still need to check if the current slide MOVED.
+                    // The currentSlideId might refer to an ID that no longer exists because we changed IDs during shift.
+                    // But wait, we changed IDs of shifted slides.
+                    // If the current slide was one of the shifted ones, its ID has changed.
+                    // We need to find the slide object that corresponds to the old currentSlideId (which is now gone/changed).
+                    // Actually, since we regenerate IDs based on X/Y, the old ID is invalid if the slide moved.
+
+                    // Let's find the slide that WAS at the current camera position (roughly) or track it by reference?
+                    // We can't track by reference easily in this immutable update.
+                    // Better approach: Find the slide that is currently at the old current slide's X/Y (if it didn't move)
+                    // OR find the slide that WAS at (oldX, oldY) but moved to (newX, newY).
+
+                    // Simplification: We know which slides moved.
+                    // If currentSlide was at (cX, cY):
+                    // - If we shifted UP and cX == delX && cY > delY -> New pos is (cX, cY - 1) -> New ID
+                    // - If we shifted LEFT and cY == delY && cX > delX -> New pos is (cX - 1, cY) -> New ID
+
+                    const currentSlideObj = state.slides.find(s => s.id === state.currentSlideId)
+                    if (currentSlideObj) {
+                        const { x: cX, y: cY } = currentSlideObj
+                        let newCX = cX
+                        let newCY = cY
+
+                        if (hasSlidesBelow && cX === delX && cY > delY) {
+                            newCY = cY - 1
+                        } else if (!hasSlidesBelow && cY === delY && cX > delX) { // Logic matches above
+                            const hasSlidesRight = state.slides.some(s => s.id !== id && s.y === delY && s.x > delX) // Re-check original state condition roughly
+                            if (hasSlidesRight) newCX = cX - 1
+                        }
+
+                        newCurrentSlideId = `slide-${newCX}-${newCY}`
+                        // Update camera just in case, though it shouldn't strictly move if the slide moved "under" it? 
+                        // Actually if the slide moves, the camera should probably move WITH it to keep the user looking at the same content.
+                        newCamera = { x: newCX * 100, y: newCY * 100 }
+                    }
+                }
+
+                return {
+                    slides: newSlides,
+                    currentSlideId: newCurrentSlideId,
+                    camera: newCamera
+                }
+            }),
+
             setCurrentSlide: (id) => set((state) => {
                 const slide = state.slides.find(s => s.id === id)
                 if (!slide) return {}
