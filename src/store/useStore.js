@@ -1,6 +1,20 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { v4 as uuidv4 } from 'uuid'
+import { get, set, del } from 'idb-keyval' // IndexedDB wrapper
+
+// Custom storage object for Zustand using IndexedDB
+const storage = {
+    getItem: async (name) => {
+        return (await get(name)) || null
+    },
+    setItem: async (name, value) => {
+        await set(name, value)
+    },
+    removeItem: async (name) => {
+        await del(name)
+    },
+}
 
 export const useStore = create(
     persist(
@@ -91,6 +105,7 @@ export const useStore = create(
         }),
         {
             name: 'prex-storage', // unique name
+            storage: createJSONStorage(() => storage), // Use IndexedDB
             partialize: (state) => ({
                 slides: state.slides,
                 currentSlideId: state.currentSlideId,
