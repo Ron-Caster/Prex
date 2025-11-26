@@ -29,12 +29,21 @@ const PropertiesPanel = ({ elementId, slideId, onClose }) => {
                     </button>
                     <h3 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Properties</h3>
                 </div>
-                <button
-                    onClick={() => removeElement(slideId, elementId)}
-                    className="text-red-400 hover:text-red-300"
-                >
-                    <Trash2 size={16} />
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => handleChange('isBackground', !element.isBackground)}
+                        className={`p-1 rounded ${element.isBackground ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400 hover:text-white'}`}
+                        title="Make Background"
+                    >
+                        <Layers size={16} />
+                    </button>
+                    <button
+                        onClick={() => removeElement(slideId, elementId)}
+                        className="text-red-400 hover:text-red-300"
+                    >
+                        <Trash2 size={16} />
+                    </button>
+                </div>
             </div>
 
             <div className="space-y-4">

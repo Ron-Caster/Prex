@@ -36,10 +36,10 @@ const Element = ({ element, slideId, isSelected, onSelect }) => {
                 style={{
                     left: 0,
                     top: 0,
-                    width: element.width,
-                    height: element.height,
-                    transform: `translate(${element.x}px, ${element.y}px) rotate(${element.rotation}deg)`,
-                    zIndex: isSelected ? 100 : (element.zIndex ?? 1),
+                    width: element.isBackground ? '100%' : element.width,
+                    height: element.isBackground ? '100%' : element.height,
+                    transform: element.isBackground ? 'none' : `translate(${element.x}px, ${element.y}px) rotate(${element.rotation}deg)`,
+                    zIndex: element.isBackground ? 0 : (isSelected ? 100 : (element.zIndex ?? 1)),
                     opacity: element.opacity ?? 1,
                     border: isSelected ? '1px solid #3b82f6' : 'none' // Visual indicator
                 }}
@@ -85,7 +85,7 @@ const Element = ({ element, slideId, isSelected, onSelect }) => {
                 )}
             </div>
 
-            {isSelected && (
+            {isSelected && !element.isBackground && (
                 <Moveable
                     target={targetRef.current}
                     draggable={true}
